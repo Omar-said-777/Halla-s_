@@ -40,8 +40,10 @@ body {
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.12), rgba(5, 10, 25, 0.95));
-    backdrop-filter: blur(14px);
+    /* Make the overlay fully opaque black so nothing underneath is visible */
+    background: #000000;
+    /* Ensure overlay blocks interaction and hides content beneath */
+    pointer-events: auto;
 }
 
 .password-card {
@@ -122,12 +124,19 @@ body {
 }
 
 body.password-locked {
+    /* Prevent any scrolling or touch interaction while locked */
     overflow: hidden;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    touch-action: none;
 }
 
 body.password-locked .page-content {
-    filter: blur(1.5px);
-    transition: filter 0.35s ease;
+    /* Hide page content while password overlay is active so nothing is visible */
+    visibility: hidden;
 }
 
 .page-content {
