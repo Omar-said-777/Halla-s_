@@ -31,6 +31,8 @@ const passwordFeedback = document.querySelector('.password-feedback');
 function showMainContent() {
     if (passwordScreen) passwordScreen.classList.add('hidden');
     document.body.classList.remove('password-locked');
+    // Allow scrolling/interactions again
+    unlockScroll();
     if (passwordInput) passwordInput.value = '';
     if (passwordFeedback) passwordFeedback.textContent = '';
 }
@@ -38,7 +40,36 @@ function showMainContent() {
 function lockPage() {
     document.body.classList.add('password-locked');
     if (passwordScreen) passwordScreen.classList.remove('hidden');
+    // Prevent scrolling/interactions while locked
+    lockScroll();
     passwordInput?.focus();
+}
+
+// --- Scroll lock helpers to fully block scrolling before unlock ---
+let _scrollLocked = false;
+function _preventDefault(e) { e.preventDefault(); }
+function _preventKeyScroll(e) {
+    // keys: Space, PageUp, PageDown, End, Home, Left, Up, Right, Down
+    const blocked = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+    if (blocked.includes(e.keyCode)) {
+        e.preventDefault();
+    }
+}
+
+function lockScroll() {
+    if (_scrollLocked) return;
+    _scrollLocked = true;
+    document.addEventListener('wheel', _preventDefault, { passive: false });
+    document.addEventListener('touchmove', _preventDefault, { passive: false });
+    document.addEventListener('keydown', _preventKeyScroll, { passive: false });
+}
+
+function unlockScroll() {
+    if (!_scrollLocked) return;
+    _scrollLocked = false;
+    document.removeEventListener('wheel', _preventDefault, { passive: false });
+    document.removeEventListener('touchmove', _preventDefault, { passive: false });
+    document.removeEventListener('keydown', _preventKeyScroll, { passive: false });
 }
 
 function initializePage() {
